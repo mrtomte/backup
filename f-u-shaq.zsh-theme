@@ -9,25 +9,25 @@ function get_user() {
 }
 
 function get_curr_temp () {
- curl -s --connect-timeout 1 -m 1 "http://www.yr.no/place/Sweden/Stockholm/Stockholm/hour_by_hour.html" | grep -iE -m2 "Temperature" | sed -n "1p" | cut -d' '  -f10 | cut -d',' -f1
+curl -s --connect-timeout 2 -m 1 "http://www.yr.no/place/Sweden/Stockholm/Stockholm/hour_by_hour.html" | grep -iE -m2 "Temperature" | sed -n "1p" | cut -d' ' -f10 | cut -d',' -f1
 }
 
 function get_dn_headline () {
- curl -s --connect-timeout 1 -m 1 http://www.dn.se/rss/senaste-nytt/ | grep -i -m2 title | grep -v "DN.se - Nyheter" | cut -d'[' -f3 | cut -d']' -f1
+ curl -s --connect-timeout 1 -m 1 http://www.dn.se/rss/senaste-nytt/ | grep -i -m2 title | grep -v "DN.se - Nyheter" | cut -d'[' -f3 | cut -d']' -f1 | sed "s/&quot;//g"
 }
 
 function get_svd_headline () {
- curl -s --connect-timeout 1 -m 1 "http://www.svd.se/?service=rss" | grep -iE "CDATA|title" | cut -d'[' -f3 | cut -d']' -f1 | sed -n '5p'
+ curl -s --connect-timeout 1 -m 1 "http://www.svd.se/?service=rss" | grep -iE "CDATA|title" | cut -d'[' -f3 | cut -d']' -f1 | sed -n '5p' | sed "s/&quot;//g"
 }
 
 function get_fz_headline () {
- curl -s --connect-timeout 1 -m 1 http://www.fz.se/core/rss/fznews_rss20.xml | grep -i "title" | grep -v "Nyheter från FZ.se" | sed -n "1p" | cut -d'>' -f2 | cut -d'<' -f1
+ curl -s --connect-timeout 1 -m 1 http://www.fz.se/core/rss/fznews_rss20.xml | grep -i "title" | grep -v "Nyheter från FZ.se" | sed -n "1p" | cut -d'>' -f2 | cut -d'<' -f1 | sed "s/&quot;//g"
 }
 
 local return_status="%{$fg_bold[magenta]%}%(?..%?)" #%{$reset_color%}
 
 PROMPT='
-$fg[green]╭──→ᶠᵘᶜᵏᵧₒᵤ $fg[cyan]$(get_user)$fg[grey]@%m$fg[green] | $fg[blue]$(get_pwd)%{$reset_color%}$fg[grey]${return_status}$(git_prompt_info)$(git_prompt_status) %{$reset_color%}$fg[grey]| YR: $(get_curr_temp)℃  | DN: $(get_dn_headline) | SVD: $(get_svd_headline) | FZ: $(get_fz_headline)
+$fg[green]╭──→ᶠᵘᶜᵏᵧₒᵤ $fg[cyan]$(get_user)$fg[grey]@%m$fg[grey] | $fg[blue]$(get_pwd)%{$reset_color%}$fg[grey]${return_status}$(git_prompt_info)$(git_prompt_status) %{$reset_color%}$fg[grey]| YR: $(get_curr_temp)℃  | DN: $(get_dn_headline) | SVD: $(get_svd_headline) | FZ: $(get_fz_headline)
 $fg[green]╰─♎→%B%b%{$reset_color%} '
 
 ZSH_THEME_GIT_PROMPT_PREFIX=" - "
